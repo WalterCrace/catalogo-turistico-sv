@@ -2,14 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Focades\Storage;
-
 class Lugar
 {
     public static function all()
     {
-        $json = Storage::get('lugares.json');
-        return json_decode($json, true);
+        $ruta = storage_path('app/lugares.json');
+        
+        if (!file_exists($ruta)) {
+            dd("ERROR: Laravel no encuentra el archivo. Ruta exacta donde buscó: " . $ruta);
+        }
+
+        $json = file_get_contents($ruta);
+        $datos = json_decode($json, true);
+
+        if ($datos === null) {
+            dd("ERROR DE LECTURA: El archivo sí existe, pero el texto JSON está corrupto: " . json_last_error_msg());
+        }
+
+        return $datos;
     }
 
     public static function find($id)
@@ -21,6 +31,7 @@ class Lugar
                 return $lugar;
             }
         }
+
         return null;
     }
 }

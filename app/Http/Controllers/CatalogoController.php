@@ -17,7 +17,7 @@ class CatalogoController extends Controller
     {
         $lugar = Lugar::find($id);
 
-        if (!$lugar){
+        if (!$lugar) {
             abort(404, 'Lugar turístico no encontrado');
         }
 

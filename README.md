@@ -1,58 +1,58 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Catálogo Turístico de El Salvador 🇸🇻
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este es un catálogo web simple desarrollado en **Laravel 10** montado sobre **Docker (Laravel Sail)**. La aplicación permite explorar destinos turísticos de El Salvador, visualizar detalles de cada lugar y acceder a un formulario de contacto, utilizando archivos JSON como base de datos.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ⚙️ Instrucciones de Instalación
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Para levantar este proyecto en un entorno local, se requiere tener instalado **Docker Desktop** y **WSL (Ubuntu)** en caso de usar Windows.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Clonar el repositorio:**
 
-## Learning Laravel
+    ```bash
+    git clone https://github.com/WalterCrace/catalogo-turistico-sv.git
+    cd catalogo-turistico-sv
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    ```
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Instalar dependencias de Composer**
+   docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+3. **Copiar el archivo de entorno**
+   cp .env.example .env
 
-## Agentic Development
+4. **Levantar el entorno de Docker (Laravel Sail)**
+   ./vendor/bin/sail up -d
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+5. **Generar la clave de la aplicación y crear tablas base**
+   ./vendor/bin/sail artisan key:generate
+   ./vendor/bin/sail artisan migrate
 
-```bash
-composer require laravel/boost --dev
+6. **Acceder a la aplicación:**
+   Abre tu navegador y visita http://localhost.
 
-php artisan boost:install
-```
+## 🧠 Descripción del Flujo MVC Implementado
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Este proyecto aplica estrictamente el patrón de arquitectura Modelo-Vista-Controlador (MVC) para separar la lógica de negocio, los datos y la interfaz de usuario:
 
-## Contributing
+El Modelo (app/Models/Lugar.php): Actúa como la capa de acceso a los datos. En lugar de consultar una base de datos SQL tradicional, este modelo lee la información directamente del archivo storage/app/lugares.json mediante la función nativa file_get_contents, decodifica el formato JSON y retorna un arreglo estructurado de PHP.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+El Controlador (app/Http/Controllers/CatalogoController.php): Es el intermediario. Intercepta la petición del usuario, solicita los datos pertinentes al Modelo (Lugar::all() o Lugar::find($id)) y envía esos datos a la Vista correspondiente.
 
-## Code of Conduct
+Las Vistas (resources/views/catalogo/): Son las encargadas de la presentación visual utilizando Blade y Bootstrap 5. Reciben los arreglos desde el Controlador y los iteran (@foreach) para generar las tarjetas de los lugares y la pantalla de detalles de forma dinámica.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📸 Capturas de Pantalla del Sistema
 
-## Security Vulnerabilities
+### Pantalla Principal (Catálogo)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+![Pantalla Principal](capture/principal.png)
 
-## License
+### Pantalla de Detalles y Formulario
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+![Pantalla de Detalles](capture/detalles.png)
